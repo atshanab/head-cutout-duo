@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Head Cutout Duo (Strongman + Horseman)</title>
+  <link rel="stylesheet" href="style.css" />
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/drawing_utils/drawing_utils.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+</head>
+<body>
+  <div id="ui">
+    <div class="bar">
+      <button id="startBtn">Start</button>
+      <button id="captureBtn">🎭 Capture Head</button>
+      <button id="photoBtn">📸 Take Photo</button>
+      <div class="sceneToggle">
+        <button id="scene-strongman">Strongman</button>
+        <button id="scene-horseman">Horseman</button>
+      </div>
+      <label class="flip"><input type="checkbox" id="flipCam"> Rear camera</label>
+      <div class="tweaks">
+        <label>Scale <input id="headScale" type="range" min="60" max="220" value="120"></label>
+        <label>X <input id="headX" type="range" min="-500" max="500" value="0"></label>
+        <label>Y <input id="headY" type="range" min="-500" max="500" value="0"></label>
+      </div>
+    </div>
+    <div id="hint">Tip: Tap <b>Capture Head</b> when your face is centered. Choose a scene, then fine‑tune Scale/X/Y.</div>
+    <div id="toast" hidden>Captured!</div>
+  </div>
+
+  <div id="stage">
+    <video id="video" playsinline></video>
+    <canvas id="canvas"></canvas>
+  </div>
+
+  <script id="scenes" type="application/json">{
+  "strongman": {
+    "title": "Strongman Booth",
+    "bg": "assets/strongman_bg.png",
+    "anchor": { "x": 540, "y": 620 },
+    "hideLiveHead": false,
+    "defaultScale": 120,
+    "rotation": 0.0
+  },
+  "horseman": {
+    "title": "Headless Horseman",
+    "bg": "assets/horseman_bg.png",
+    "anchor": { "x": 260, "y": 650 },
+    "hideLiveHead": true,
+    "defaultScale": 120,
+    "rotation": -0.05
+  }
+}</script>
+  <script src="script.js"></script>
+</body>
+</html>
