@@ -210,9 +210,9 @@ function onResults(results){
     if (p.x > maxX) maxX = p.x;
     if (p.y > maxY) maxY = p.y;
   }
-const padX = 0.02;  // horizontal padding
-const padYTop = 0.03;  // small padding above forehead
-const padYBottom = 0.10;  // more cropping below chin (remove neck)
+const padX = 0.01;  // horizontal padding
+const padYTop = 0.02;  // small padding above forehead
+const padYBottom = 0.05;  // more cropping below chin (remove neck)
 
 minX = Math.max(0, minX - padX);
 maxX = Math.min(1, maxX + padX);
