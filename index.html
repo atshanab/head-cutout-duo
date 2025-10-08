@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Horseman Face (Auto‑Start)</title>
+  <link rel="stylesheet" href="style.css" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+</head>
+<body>
+  <main>
+    <div class="stage">
+      <canvas id="scene" width="1152" height="1536" aria-label="Horseman scene"></canvas>
+      <div id="status" class="status">Requesting camera…</div>
+      <pre id="debug" class="debug"></pre>
+    </div>
+
+    <video id="cam" playsinline muted></video>
+
+    <div class="controls">
+      <button id="start" class="secondary hidden">Start Camera</button>
+      <button id="snap">Take Photo</button>
+      <a id="download" download="horseman-selfie.png" class="hidden">Download Photo</a>
+    </div>
+  </main>
+
+  <script src="script.js"></script>
+  <!-- MediaPipe FaceMesh CDN -->
+  <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/@mediapipe/face_mesh/face_mesh.js"></script>
+</body>
+</html>
