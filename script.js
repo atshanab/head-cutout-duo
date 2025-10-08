@@ -210,11 +210,14 @@ function onResults(results){
     if (p.x > maxX) maxX = p.x;
     if (p.y > maxY) maxY = p.y;
   }
-  const pad = 0.05;
-  minX = Math.max(0, minX - pad);
-  minY = Math.max(0, minY - pad);
-  maxX = Math.min(1, maxX + pad);
-  maxY = Math.min(1, maxY + pad);
+const padX = 0.02;  // horizontal padding
+const padYTop = 0.03;  // small padding above forehead
+const padYBottom = 0.10;  // more cropping below chin (remove neck)
+
+minX = Math.max(0, minX - padX);
+maxX = Math.min(1, maxX + padX);
+minY = Math.max(0, minY - padYTop);
+maxY = Math.min(1, maxY - padYBottom);
 
   const vw = video.videoWidth || 640;
   const vh = video.videoHeight || 480;
