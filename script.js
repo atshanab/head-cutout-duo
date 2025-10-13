@@ -68,48 +68,97 @@ document.addEventListener('visibilitychange', () => {
   }
 });
 
+// Replace your existing snapBtn.addEventListener('click', ...) with this:
 snapBtn.addEventListener('click', async () => {
   try {
-    // Create PNG blob from canvas
+    statusEl.textContent = 'Preparing photo…';
     const blob = await new Promise(res => canvas.toBlob(res, 'image/png', 1));
+    if (!blob) throw new Error('Could not render PNG');
     const file = new File([blob], 'horseman-selfie.png', { type: 'image/png' });
 
-    // Try Web Share Level 2 (opens iOS/Android share sheet — can “Save Image” to Photos)
-    if (navigator.canShare && navigator.canShare({ files:[file] })) {
+    // 1) Best case on iOS + Android: native share sheet with file (lets user "Save Image" / save to Photos)
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
       await navigator.share({
         files: [file],
         title: 'Horseman Selfie',
-        text: 'Save to Photos or share.'
+        text: 'Tap “Save Image” to add to Photos.'
       });
-      statusEl.textContent = 'Shared. Use your share options to Save Image.';
+      statusEl.textContent = 'Shared. Use the sheet to Save Image.';
       return;
     }
 
-    // iOS fallback: open the image in a new tab so user can long‑press “Add to Photos”
-    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // 2) iOS Safari fallback: open image in a new tab -> user long-presses "Add to Photos"
+    const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                  (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    const url = URL.createObjectURL(blob);
+
     if (isIOS) {
-      const url = URL.createObjectURL(blob);
-      const win = window.open(url, '_blank'); // user can long-press to save
+      const win = window.open(url, '_blank', 'noopener,noreferrer');
       if (!win) {
-        // If popup blocked, fall back to download link
-        dlLink.href = url; dlLink.classList.remove('hidden'); dlLink.textContent = 'Download Photo';
+        // If a popup blocker stops it, show a visible link instead
+        dlLink.href = url;
+        dlLink.classList.remove('hidden');
+        dlLink.textContent = 'Open Photo (long-press → Add to Photos)';
+      } else {
+        // Optional helper overlay telling the user what to do
+        showHintOverlay('Long-press the image and choose “Add to Photos”.');
       }
-      statusEl.textContent = 'Long‑press the image and choose “Add to Photos”.';
+      statusEl.textContent = 'Opened image — long-press “Add to Photos”.';
+      // Clean up later
+      setTimeout(() => URL.revokeObjectURL(url), 60_000);
       return;
     }
 
-    // Desktop/Android fallback: trigger a download
-    const aurl = URL.createObjectURL(blob);
-    dlLink.href = aurl;
+    // 3) Android/desktop fallback A: showSaveFilePicker (Chrome/Edge) — user chooses where to save
+    if ('showSaveFilePicker' in window) {
+      try {
+        const handle = await window.showSaveFilePicker({
+          suggestedName: 'horseman-selfie.png',
+          types: [{ description: 'PNG Image', accept: { 'image/png': ['.png'] } }]
+        });
+        const writable = await handle.createWritable();
+        await writable.write(blob);
+        await writable.close();
+        statusEl.textContent = 'Saved. If not visible in Photos, check Downloads.';
+        return;
+      } catch (err) {
+        // user canceled or blocked; fall through to download link
+      }
+    }
+
+    // 4) Last resort: downloadable link (Android usually puts this into Downloads, then it appears in Gallery)
+    dlLink.href = url;
+    dlLink.download = 'horseman-selfie.png';
     dlLink.classList.remove('hidden');
     dlLink.textContent = 'Download Photo';
-    statusEl.textContent = 'Photo ready – use the link to save.';
+    statusEl.textContent = 'Photo ready — tap Download to save.';
+    // don’t revoke immediately; user needs the link
   } catch (e) {
     console.error(e);
     statusEl.textContent = 'Could not prepare photo.';
-    log(e.message || e);
+    dbg.textContent = e?.message || String(e);
   }
 });
+
+// Tiny helper to show a quick on-page instruction overlay (iOS long-press hint)
+function showHintOverlay(message) {
+  const overlay = document.createElement('div');
+  overlay.style.position = 'fixed';
+  overlay.style.inset = '0';
+  overlay.style.background = 'rgba(0,0,0,0.6)';
+  overlay.style.color = '#fff';
+  overlay.style.display = 'flex';
+  overlay.style.alignItems = 'center';
+  overlay.style.justifyContent = 'center';
+  overlay.style.zIndex = '9999';
+  overlay.style.padding = '24px';
+  overlay.style.textAlign = 'center';
+  overlay.style.fontSize = '16px';
+  overlay.textContent = message + ' (this message disappears in 4s)';
+  document.body.appendChild(overlay);
+  setTimeout(() => overlay.remove(), 4000);
+}
+
 
 function drawBase() {
   ctx.clearRect(0,0,canvas.width,canvas.height);
