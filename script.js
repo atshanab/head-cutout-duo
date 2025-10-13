@@ -1,8 +1,8 @@
 // Auto-start camera & smarter photo saving (Web Share / iOS long-press / download)
 const CONFIG = {
-  x: parseFloat(new URLSearchParams(location.search).get('x')) || 0.8,
+  x: parseFloat(new URLSearchParams(location.search).get('x')) || 0.6,
   y: parseFloat(new URLSearchParams(location.search).get('y')) || .1,
-  w: parseFloat(new URLSearchParams(location.search).get('w')) || 0.2,
+  w: parseFloat(new URLSearchParams(location.search).get('w')) || 0.3,
   h: parseFloat(new URLSearchParams(location.search).get('h')) || 0.2,
   feather: parseFloat(new URLSearchParams(location.search).get('feather')) || 0.08,
   autostart: (new URLSearchParams(location.search).get('autostart') ?? '1') !== '0'
