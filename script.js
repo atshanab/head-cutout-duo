@@ -1,6 +1,6 @@
 // Auto-start camera & smarter photo saving (Web Share / iOS long-press / download)
 const CONFIG = {
-  x: parseFloat(new URLSearchParams(location.search).get('x')) || 0.4,
+  x: parseFloat(new URLSearchParams(location.search).get('x')) || 0.6,
   y: parseFloat(new URLSearchParams(location.search).get('y')) || .1,
   w: parseFloat(new URLSearchParams(location.search).get('w')) || 0.25,
   h: parseFloat(new URLSearchParams(location.search).get('h')) || 0.2,
